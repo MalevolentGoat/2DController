@@ -7,9 +7,12 @@ public class Character : MonoBehaviour {
     [SerializeField]
     private float speed;
     private Vector2 direction;
+	private SpriteRenderer mySpriteRenderer;
+	private Animator animator;
 
 	void Start () {
-		
+		animator = GetComponent<Animator>();
+		mySpriteRenderer = GetComponent<SpriteRenderer>();
 	}
 	
 	void Update () {
@@ -20,6 +23,7 @@ public class Character : MonoBehaviour {
     public void Move()
     {
         transform.Translate(direction*speed*Time.deltaTime);
+		AnimateMovement ();
     }
 
     private void getInput()
@@ -32,6 +36,7 @@ public class Character : MonoBehaviour {
         if (Input.GetKey(KeyCode.A))
         {
             direction += Vector2.left;
+			mySpriteRenderer.flipX = false;
         }
         if (Input.GetKey(KeyCode.S))
         {
@@ -40,6 +45,13 @@ public class Character : MonoBehaviour {
         if (Input.GetKey(KeyCode.D))
         {
             direction += Vector2.right;
+			mySpriteRenderer.flipX = true;
         }
     }
+
+	public void AnimateMovement()
+	{
+		animator.SetFloat ("x", direction.x);
+		animator.SetFloat ("y", direction.y);
+	}
 }

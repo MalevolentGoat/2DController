@@ -6,6 +6,8 @@ public class Character : MonoBehaviour {
 
     [SerializeField]
     private float speed;
+    [SerializeField]
+    private float mouseSpeed;
     private Vector3 direction;
 	private SpriteRenderer mySpriteRenderer;
 	private Animator animator;
@@ -46,6 +48,10 @@ public class Character : MonoBehaviour {
         {
             direction += Vector3.right;
 			mySpriteRenderer.flipX = true;
+        }
+        if (Input.GetMouseButton(2))
+        {
+            transform.Rotate(new Vector3(0, -Input.GetAxis("Mouse X") * mouseSpeed, 0));
         }
     }
 

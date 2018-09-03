@@ -6,45 +6,45 @@ public class Character : MonoBehaviour {
 
     [SerializeField]
     private float speed;
-    private Vector2 direction;
+    private Vector3 direction;
 	private SpriteRenderer mySpriteRenderer;
 	private Animator animator;
 
 	void Start () {
-		animator = GetComponent<Animator>();
-		mySpriteRenderer = GetComponent<SpriteRenderer>();
+		animator = GetComponentInChildren<Animator>();
+		mySpriteRenderer = GetComponentInChildren<SpriteRenderer>();
 	}
 	
 	void Update () {
         getInput();
         Move();
-	}
+    }
 
     public void Move()
     {
         transform.Translate(direction*speed*Time.deltaTime);
-		AnimateMovement ();
+        AnimateMovement ();
     }
 
     private void getInput()
     {
-        direction = Vector2.zero;
+        direction = Vector3.zero;
         if (Input.GetKey(KeyCode.W))
         {
-            direction += Vector2.up;
+            direction += Vector3.forward;
         }
         if (Input.GetKey(KeyCode.A))
         {
-            direction += Vector2.left;
+            direction += Vector3.left;
 			mySpriteRenderer.flipX = false;
         }
         if (Input.GetKey(KeyCode.S))
         {
-            direction += Vector2.down;
+            direction += Vector3.back;
         }
         if (Input.GetKey(KeyCode.D))
         {
-            direction += Vector2.right;
+            direction += Vector3.right;
 			mySpriteRenderer.flipX = true;
         }
     }
@@ -53,5 +53,6 @@ public class Character : MonoBehaviour {
 	{
 		animator.SetFloat ("x", direction.x);
 		animator.SetFloat ("y", direction.y);
+        animator.SetFloat ("z", direction.z);
 	}
 }

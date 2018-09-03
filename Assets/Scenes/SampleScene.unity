@@ -518,6 +518,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 2.5
   mouseSpeed: 3.5
+  gravity: 10
+  jumpSpeed: 3
 --- !u!4 &2048513693
 Transform:
   m_ObjectHideFlags: 0

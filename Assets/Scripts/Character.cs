@@ -8,13 +8,17 @@ public class Character : MonoBehaviour {
     private float speed;
     [SerializeField]
     private float mouseSpeed;
+    [SerializeField]
+    private float gravity;
     private Vector3 direction;
 	private SpriteRenderer mySpriteRenderer;
 	private Animator animator;
+    private CharacterController controller;
 
 	void Start () {
 		animator = GetComponentInChildren<Animator>();
-		mySpriteRenderer = GetComponentInChildren<SpriteRenderer>();
+        controller = GetComponent<CharacterController>();
+        mySpriteRenderer = GetComponentInChildren<SpriteRenderer>();
 	}
 	
 	void Update () {
@@ -24,31 +28,35 @@ public class Character : MonoBehaviour {
 
     public void Move()
     {
-        transform.Translate(direction*speed*Time.deltaTime);
-        AnimateMovement ();
+        AnimateMovement();
+        direction = transform.TransformDirection(direction);
+        controller.Move(direction*speed*Time.deltaTime);
     }
 
     private void getInput()
     {
-        direction = Vector3.zero;
-        if (Input.GetKey(KeyCode.W))
+        if (controller.isGrounded)
         {
-            direction += Vector3.forward;
-        }
-        if (Input.GetKey(KeyCode.A))
-        {
-            direction += Vector3.left;
-			mySpriteRenderer.flipX = false;
-        }
-        if (Input.GetKey(KeyCode.S))
-        {
-            direction += Vector3.back;
-        }
-        if (Input.GetKey(KeyCode.D))
-        {
-            direction += Vector3.right;
-			mySpriteRenderer.flipX = true;
-        }
+            direction = Vector3.zero;
+            if (Input.GetKey(KeyCode.W))
+            {
+                direction += Vector3.forward;
+            }
+            if (Input.GetKey(KeyCode.A))
+            {
+                direction += Vector3.left;
+                mySpriteRenderer.flipX = false;
+            }
+            if (Input.GetKey(KeyCode.S))
+            {
+                direction += Vector3.back;
+            }
+            if (Input.GetKey(KeyCode.D))
+            {
+                direction += Vector3.right;
+                mySpriteRenderer.flipX = true;
+            }
+        } else { direction.y -= gravity * Time.deltaTime; }
         if (Input.GetMouseButton(2))
         {
             transform.Rotate(new Vector3(0, -Input.GetAxis("Mouse X") * mouseSpeed, 0));

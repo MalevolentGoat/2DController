@@ -4,22 +4,26 @@ using UnityEngine;
 
 public class Character : MonoBehaviour {
 
-    [SerializeField]
-    private float speed;
-    [SerializeField]
-    private float mouseSpeed;
-    [SerializeField]
-    private float gravity;
+    public float speed;
+    public float mouseSpeed;
+    public float gravity;
+    public float jumpSpeed;
+    private bool isGrounded = true;
+    public float GroundDistance = 0.2f;
+    public LayerMask Ground;
+    private Vector3 velocity;
     private Vector3 direction;
-	private SpriteRenderer mySpriteRenderer;
+	private SpriteRenderer spriteRenderer;
 	private Animator animator;
     private CharacterController controller;
+    private Transform groundChecker;
 
-	void Start () {
+    void Start () {
 		animator = GetComponentInChildren<Animator>();
         controller = GetComponent<CharacterController>();
-        mySpriteRenderer = GetComponentInChildren<SpriteRenderer>();
-	}
+        spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+        groundChecker = transform.GetChild(0);
+    }
 	
 	void Update () {
         getInput();
@@ -29,44 +33,49 @@ public class Character : MonoBehaviour {
     public void Move()
     {
         AnimateMovement();
+
         direction = transform.TransformDirection(direction);
-        controller.Move(direction*speed*Time.deltaTime);
+
+        controller.Move(direction * speed * Time.deltaTime);
+
+        velocity.y += gravity * Time.deltaTime;
+        controller.Move(velocity * Time.deltaTime);
+
     }
 
     private void getInput()
     {
-        if (controller.isGrounded)
+        direction = new Vector3 (Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
+
+        if (Input.GetKey(KeyCode.A))
         {
-            direction = Vector3.zero;
-            if (Input.GetKey(KeyCode.W))
-            {
-                direction += Vector3.forward;
-            }
-            if (Input.GetKey(KeyCode.A))
-            {
-                direction += Vector3.left;
-                mySpriteRenderer.flipX = false;
-            }
-            if (Input.GetKey(KeyCode.S))
-            {
-                direction += Vector3.back;
-            }
-            if (Input.GetKey(KeyCode.D))
-            {
-                direction += Vector3.right;
-                mySpriteRenderer.flipX = true;
-            }
-        } else { direction.y -= gravity * Time.deltaTime; }
+            spriteRenderer.flipX = false;
+        }
+        if (Input.GetKey(KeyCode.D))
+        {
+            spriteRenderer.flipX = true;
+        }
+
+        velocity.y += gravity * Time.deltaTime;
+        isGrounded = Physics.CheckSphere(groundChecker.position, GroundDistance, Ground, QueryTriggerInteraction.Ignore);
+        if (isGrounded && velocity.y < 0)
+            velocity.y = 0f;
+
+        if (isGrounded && Input.GetKey(KeyCode.Space))
+        {
+            velocity.y += Mathf.Sqrt(jumpSpeed * -2f * gravity);
+        }
+
         if (Input.GetMouseButton(2))
         {
-            transform.Rotate(new Vector3(0, -Input.GetAxis("Mouse X") * mouseSpeed, 0));
+            transform.Rotate(0, -Input.GetAxis("Mouse X") * mouseSpeed, 0);
         }
     }
 
 	public void AnimateMovement()
 	{
 		animator.SetFloat ("x", direction.x);
-		animator.SetFloat ("y", direction.y);
+        animator.SetFloat ("y", velocity.y);
         animator.SetFloat ("z", direction.z);
 	}
 }
